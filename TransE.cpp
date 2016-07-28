@@ -177,6 +177,7 @@ private:
              	}
              	//printing the number of ecpochs
                 cout<<"epoch:"<<epoch<<' '<<res<<endl;
+                //write the learnt embeddings to a file
                 FILE* f2 = fopen(("relation2vec."+version).c_str(),"w");
                 FILE* f3 = fopen(("entity2vec."+version).c_str(),"w");
                 for (int i=0; i<relation_num; i++)
@@ -217,6 +218,7 @@ private:
 	    // x holds the the ii_th entry of gradient of vector (e2_a-e1_a-rel_a)
             double x = 2*(entity_vec[e2_a][ii]-entity_vec[e1_a][ii]-relation_vec[rel_a][ii]);
             if (L1_flag)
+            	//this part is unclear
             	if (x>0)
             		x=1;
             	else
@@ -241,6 +243,8 @@ private:
             entity_tmp[e2_b][ii]+=rate*x;
         }
     }
+    //e1_a, e2_a, rel_a is the proper relation triplet
+    //e1_b, e2_b, rel_b is the corrupted relation triplet
     void train_kb(int e1_a,int e2_a,int rel_a,int e1_b,int e2_b,int rel_b)
     {
     	//sum1 is the norm of the vector e2_a-e1_a-rel_a
@@ -252,6 +256,7 @@ private:
         {
         	//res is the loss function value
         	res+=margin+sum1-sum2;
+        	//compue the gradient and update the relation and entity vectors accordingly
         	gradient( e1_a, e2_a, rel_a, e1_b, e2_b, rel_b);
         }
     }
