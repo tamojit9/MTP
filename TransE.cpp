@@ -269,7 +269,7 @@ void prepare()
         //side entities as well as the realtionship
         train.add(entity2id[s1],entity2id[s2],relation2id[s3]);
     }
-    //looping through all relationships ids
+    //looping through all relationship ids
     for (int i=0; i<relation_num; i++)
     {
 
@@ -285,9 +285,11 @@ void prepare()
     	//this dictionary keeps a count of the average number of times an entity has appeared in this relation
     	left_num[i]=sum2/sum1;
     }
+    //looping through all relationship ids
     for (int i=0; i<relation_num; i++)
     {
     	double sum1=0,sum2=0;
+    	//doing the same stuff for the right hand side entity
     	for (map<int,int>::iterator it = right_entity[i].begin(); it!=right_entity[i].end(); it++)
     	{
     		sum1++;
@@ -295,6 +297,7 @@ void prepare()
     	}
     	right_num[i]=sum2/sum1;
     }
+    //printing the relationship number and the entity numbers
     cout<<"relation_num="<<relation_num<<endl;
     cout<<"entity_num="<<entity_num<<endl;
     fclose(f_kb);
@@ -334,6 +337,7 @@ int main(int argc,char**argv)
     else
         version = "unif";
     cout<<"method = "<<version<<endl;
+    //created all the dictionaries, load all the relationships in the train class and then we will start training
     prepare();
     train.run(n,rate,margin,method);
 }
