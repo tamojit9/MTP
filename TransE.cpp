@@ -149,6 +149,8 @@ private:
 								j=rand_max(entity_num);
 							//this method is used to implement stochastic gradient decent using 
 							//this current set of triplets
+							//fb_h[i],fb_l[i],fb_r[i] is the actual triplet
+							//fb_h[i],j,fb_r[i] is the right corrupted triplet
 							train_kb(fb_h[i],fb_l[i],fb_r[i],fb_h[i],j,fb_r[i]);
 						}
 						else
@@ -158,16 +160,22 @@ private:
 							//the same logic of finding the first enttiy that does not have relation
 							while (ok[make_pair(j,fb_r[i])].count(fb_l[i])>0)
 								j=rand_max(entity_num);
+							//fb_h[i],fb_l[i],fb_r[i] is the actual triplet
+							//j,fb_h[i],fb_r[i] is the right corrupted triplet
 							train_kb(fb_h[i],fb_l[i],fb_r[i],j,fb_l[i],fb_r[i]);
 						}
+				//normalising to meet the additional constraints that the 
+				//entity embedding has a magnitude of 1.
                 		norm(relation_tmp[fb_r[i]]);
                 		norm(entity_tmp[fb_h[i]]);
                 		norm(entity_tmp[fb_l[i]]);
                 		norm(entity_tmp[j]);
              		}
-		            relation_vec = relation_tmp;
-		            entity_vec = entity_tmp;
+             		//updated the relationship and the entity vectors 
+		        relation_vec = relation_tmp;
+		        entity_vec = entity_tmp;
              	}
+             	//printing the number of ecpochs
                 cout<<"epoch:"<<epoch<<' '<<res<<endl;
                 FILE* f2 = fopen(("relation2vec."+version).c_str(),"w");
                 FILE* f3 = fopen(("entity2vec."+version).c_str(),"w");
@@ -203,24 +211,31 @@ private:
     }
     void gradient(int e1_a,int e2_a,int rel_a,int e1_b,int e2_b,int rel_b)
     {
+    	//looping through all the entries in the n dimensional vector
         for (int ii=0; ii<n; ii++)
         {
-
+	    // x holds the the ii_th entry of gradient of vector (e2_a-e1_a-rel_a)
             double x = 2*(entity_vec[e2_a][ii]-entity_vec[e1_a][ii]-relation_vec[rel_a][ii]);
             if (L1_flag)
             	if (x>0)
             		x=1;
             	else
             		x=-1;
+            //make changes to the entity and relationship vectors according to the rate
+            //increase e1_a and rel1_a and decrease e2_a 
             relation_tmp[rel_a][ii]-=-1*rate*x;
             entity_tmp[e1_a][ii]-=-1*rate*x;
             entity_tmp[e2_a][ii]+=-1*rate*x;
+            
+            // x holds the the ii_th entry of gradient of vector (e2_b-e1_b-rel_b)
             x = 2*(entity_vec[e2_b][ii]-entity_vec[e1_b][ii]-relation_vec[rel_b][ii]);
             if (L1_flag)
             	if (x>0)
             		x=1;
             	else
             		x=-1;
+            //make changes to the entity and relationship vectors according to the rate
+            //increase e1_b and rel1_b and decrease e2_b 
             relation_tmp[rel_b][ii]-=rate*x;
             entity_tmp[e1_b][ii]-=rate*x;
             entity_tmp[e2_b][ii]+=rate*x;
@@ -228,10 +243,14 @@ private:
     }
     void train_kb(int e1_a,int e2_a,int rel_a,int e1_b,int e2_b,int rel_b)
     {
+    	//sum1 is the norm of the vector e2_a-e1_a-rel_a
         double sum1 = calc_sum(e1_a,e2_a,rel_a);
+        //sum2 is the norm of the vector e2_b-e1_b-rel_b
         double sum2 = calc_sum(e1_b,e2_b,rel_b);
+        //since we only have to consider the postive parts of the loss function 
         if (sum1+margin>sum2)
         {
+        	//res is the loss function value
         	res+=margin+sum1-sum2;
         	gradient( e1_a, e2_a, rel_a, e1_b, e2_b, rel_b);
         }
