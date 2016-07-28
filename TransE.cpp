@@ -15,12 +15,13 @@ public:
     map<pair<int,int>, map<int,int> > ok;
     void add(int x,int y,int z)
     {
-    	//these dictionaries are used for keeping the freebase entities left side and right side.
+    	//this dictionary is used for keeping the freebase entities left side.
         fb_h.push_back(x);
-        fb_r.push_back(z);
         //this is used for keeping the relationship label
+        fb_r.push_back(z);
+        //this dictionary is used for keeping the freebase entities right side.
         fb_l.push_back(y);
-        //this is used for keeping the relationship like this (x is related to z by the relation y)
+        //this is used for keeping the relationship like this (x is related to y by the relation z)
         ok[make_pair(x,z)][y]=1;
     }
     void run(int n_in,double rate_in,double margin_in,int method_in)
@@ -303,7 +304,7 @@ void prepare()
     		// this variable is used for counting the total number of ids linked with this relation
     		sum2+=it->second;
     	}
-    	//this dictionary keeps a count of the average number of times an entity has appeared in this relation
+    	//this dictionary keeps a count of the average number of times an entity has appeared in this relation with id i
     	left_num[i]=sum2/sum1;
     }
     //looping through all relationship ids
@@ -316,6 +317,7 @@ void prepare()
     		sum1++;
     		sum2+=it->second;
     	}
+    	//this dictionary keeps a count of the average number of times an entity has appeared in this relation with id i
     	right_num[i]=sum2/sum1;
     }
     //printing the relationship number and the entity numbers
