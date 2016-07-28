@@ -134,19 +134,28 @@ private:
 						double pr = 1000*right_num[fb_r[i]]/(right_num[fb_r[i]]+left_num[fb_r[i]]);
 						if (method == 0)
                             				pr = 500;
-                            			//a decision is taken on a random number generated and the value of pr
+                            			//a decision on what to corrupt the
+                            			//head relation or the tail relation is taken 
+                            			//based on a random number generated and the value of pr
 						if (rand()%1000<pr)
 						{
+							// the right entity is corrupted
+							
 							//go on iterating untill there exists a relation of the form 
 							//entityid = fb_h[i] is related to entityid = j by the relationshipid = fb_r[i] 
 							//So, find an entity id such that it is not related with the entityid = fb_h[i] 
 							//using the relationshipid = fb_r[i] 
 							while (ok[make_pair(fb_h[i],fb_r[i])].count(j)>0)
 								j=rand_max(entity_num);
+							//this method is used to implement stochastic gradient decent using 
+							//this current set of triplets
 							train_kb(fb_h[i],fb_l[i],fb_r[i],fb_h[i],j,fb_r[i]);
 						}
 						else
 						{
+							// the left entity is corrupted
+							
+							//the same logic of finding the first enttiy that does not have relation
 							while (ok[make_pair(j,fb_r[i])].count(fb_l[i])>0)
 								j=rand_max(entity_num);
 							train_kb(fb_h[i],fb_l[i],fb_r[i],j,fb_l[i],fb_r[i]);
@@ -181,7 +190,9 @@ private:
     double res1;
     double calc_sum(int e1,int e2,int rel)
     {
+    	//this function is used to compute the norm of vector (e2-e1-rel)
         double sum=0;
+        //L1_flag is used to decide if we want L1 norm or L2 norm
         if (L1_flag)
         	for (int ii=0; ii<n; ii++)
             	sum+=fabs(entity_vec[e2][ii]-entity_vec[e1][ii]-relation_vec[rel][ii]);
