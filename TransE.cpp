@@ -121,13 +121,26 @@ private:
             		//iterating through the batches
              		for (int k=0; k<batchsize; k++)
              		{
+						//store in i a uniformly generated random number > 0 and <= fb_h.size()
+             					//i.e. get a random index into the list of head entities
 						int i=rand_max(fb_h.size());
+						//i.e. get a random entity_id
 						int j=rand_max(entity_num);
+						//fb_r[i] = relationship id corresponding to the random index i
+						//right_num[fb_r[i]] = count of the average number of times an entity
+						//		       has appeared in this relation(with id fb_r[i])
+						//similarly for right hand side 
+						//pr is some probability metric.
 						double pr = 1000*right_num[fb_r[i]]/(right_num[fb_r[i]]+left_num[fb_r[i]]);
-						if (method ==0)
-                            pr = 500;
+						if (method == 0)
+                            				pr = 500;
+                            			//a decision is taken on a random number generated and the value of pr
 						if (rand()%1000<pr)
 						{
+							//go on iterating untill there exists a relation of the form 
+							//entityid = fb_h[i] is related to entityid = j by the relationshipid = fb_r[i] 
+							//So, find an entity id such that it is not related with the entityid = fb_h[i] 
+							//using the relationshipid = fb_r[i] 
 							while (ok[make_pair(fb_h[i],fb_r[i])].count(j)>0)
 								j=rand_max(entity_num);
 							train_kb(fb_h[i],fb_l[i],fb_r[i],fb_h[i],j,fb_r[i]);
