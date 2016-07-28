@@ -12,7 +12,7 @@ map<int,double> left_num,right_num;
 class Train{
 
 public:
-	map<pair<int,int>, map<int,int> > ok;
+    map<pair<int,int>, map<int,int> > ok;
     void add(int x,int y,int z)
     {
     	//these dictionaries are used for keeping the freebase entities left side and right side.
@@ -20,36 +20,52 @@ public:
         fb_r.push_back(z);
         //this is used for keeping the relationship label
         fb_l.push_back(y);
-        //this is used for keeping the relationship like this (x is related to z by relation y)
+        //this is used for keeping the relationship like this (x is related to z by the relation y)
         ok[make_pair(x,z)][y]=1;
     }
     void run(int n_in,double rate_in,double margin_in,int method_in)
     {
+    	//
         n = n_in;
         rate = rate_in;
         margin = margin_in;
         method = method_in;
+        //represents an array of n dimensional relationship vectors
         relation_vec.resize(relation_num);
+        	// and allocate each individual vector a size of n(dimension of embedding)
 		for (int i=0; i<relation_vec.size(); i++)
 			relation_vec[i].resize(n);
+	//represents an array of n dimensional entity vectors
         entity_vec.resize(entity_num);
+        	// and allocate each individual vector a size of n
 		for (int i=0; i<entity_vec.size(); i++)
 			entity_vec[i].resize(n);
+	//temporary array of n dimensional relation vectors
         relation_tmp.resize(relation_num);
+        	// and allocate each individual vector a size of n(dimension of embedding)
 		for (int i=0; i<relation_tmp.size(); i++)
 			relation_tmp[i].resize(n);
+	//temporary array of n dimensional entity vectors
         entity_tmp.resize(entity_num);
+        	// and allocate each individual vector a size of n(dimension of embedding)
 		for (int i=0; i<entity_tmp.size(); i++)
 			entity_tmp[i].resize(n);
+	//iterating through all relationship ids
         for (int i=0; i<relation_num; i++)
         {
+            //this is initializing the relationship vector with initial random values.
+            //relation_vec[i] is the relationship vector corresponding to the relationshipid 'i'
             for (int ii=0; ii<n; ii++)
                 relation_vec[i][ii] = randn(0,1.0/n,-6/sqrt(n),6/sqrt(n));
         }
+        //iterating through all entity ids
         for (int i=0; i<entity_num; i++)
         {
+            //this is initializing the entity vector with initial random values.
+            //entity_vec[i] is the entity vector corresponding to the entityid 'i'
             for (int ii=0; ii<n; ii++)
                 entity_vec[i][ii] = randn(0,1.0/n,-6/sqrt(n),6/sqrt(n));
+            // this is normalising the entity vector by divinding each entry in the vector by the size of the vector
             norm(entity_vec[i]);
         }
 
@@ -86,17 +102,22 @@ private:
     void bfgs()
     {
         res=0;
-        int nbatches=100;
-        int nepoch = 1000;
-        int batchsize = fb_h.size()/nbatches;
+        int nbatches=100; //number of batches
+        int nepoch = 1000; // number of iterat
+        //fb_h has all the head entities in the dataset
+        int batchsize = fb_h.size()/nbatches; // number of elements to be used in a batch
+            //main for loop used for each individual iteration
             for (int epoch=0; epoch<nepoch; epoch++)
             {
 
             	res=0;
+            	//iterating through the number of batches
              	for (int batch = 0; batch<nbatches; batch++)
-             	{
+             	{	
+             		//working on the current relationship vector by storing it in the temporary vector
              		relation_tmp=relation_vec;
             		entity_tmp = entity_vec;
+            		//iterating through the batches
              		for (int k=0; k<batchsize; k++)
              		{
 						int i=rand_max(fb_h.size());
@@ -321,8 +342,11 @@ int ArgPos(char *str, int argc, char **argv) {
 int main(int argc,char**argv)
 {
     srand((unsigned) time(NULL));
+    //-size : the embedding size k, d
+    //-rate : learing rate
+    //-method: 0 - unif, 1 - bern
     int method = 1;
-    int n = 100;
+    int n = 100; // dimension of the embedding space
     double rate = 0.001;
     double margin = 1;
     int i;
