@@ -1,4 +1,5 @@
 import re
+import os
 
 mid_fileID = {"" : []}
 locationMap = {"":""}
@@ -52,16 +53,31 @@ def extractTextFromAllFiles() :
 			extractText(locationMap[file])
 		print "#",
 	print
-
+def removeTag(tag, fromF) :
+	ff = open(fromF)
+	tf = open(fromF+"wo"+tag, 'w')
+	ot = "<" + tag + ">"
+	ct = "</" + tag + ">"
+	for line in ff :
+		if(ot in line) :
+			tf.write(line[3:]+"\n")
+		elif(ct in line) :
+			tf.write(line[:line.find(ct)]+"\n")
+	tf.close()
 if __name__ == '__main__' :
-	makeMIDDictionary("final_mids_cleaned.txt")
-	print "MID mapping Done"
-	print "number of MIDS = " + str(len(mid_fileID))                                                             
-	fillDictionary("nyt-train_COPY")
-	print("found the file ids corresponding to the previous MIDS")
-	mapLocations('file.tbl')
-	print "Mapping of locations done"
-	print "extracting text"
-	extractTextFromAllFiles()
-	to.close()
-	print "done extraction"
+	fileLocation = "corpus"
+	if(os.path.isfile(fileLocation)) :
+		makeMIDDictionary("final_mids_cleaned.txt")
+		print "MID mapping Done"
+		print "number of MIDS = " + str(len(mid_fileID))                                                             
+		fillDictionary("nyt-train_COPY")
+		print("found the file ids corresponding to the previous MIDS")
+		mapLocations('file.tbl')
+		print "Mapping of locations done"
+		print "extracting text"
+		extractTextFromAllFiles()
+		to.close()
+		print "done extraction"
+	else :
+		removTag('p', fileLocation)
+	
