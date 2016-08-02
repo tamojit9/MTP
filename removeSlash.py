@@ -66,7 +66,7 @@ def removeTag(tag, fromF) :
 	tf.close()
 if __name__ == '__main__' :
 	fileLocation = "corpus"
-	if(os.path.isfile(fileLocation)) :
+	if(True) :
 		makeMIDDictionary("final_mids_cleaned.txt")
 		print "MID mapping Done"
 		print "number of MIDS = " + str(len(mid_fileID))                                                             
@@ -78,6 +78,6 @@ if __name__ == '__main__' :
 		extractTextFromAllFiles()
 		to.close()
 		print "done extraction"
-	else :
-		removTag('p', fileLocation)
+		removeTag('p', fileLocation)
+		print "done removing tag"
 	
