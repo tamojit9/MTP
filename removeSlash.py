@@ -60,11 +60,12 @@ def removeTag(tag, fromF) :
 	ct = "</" + tag + ">"
 	for line in ff :
 		if(ot in line) :
-			tf.write(line[3:]+"\n")
-		elif(ct in line) :
-			tf.write(line[:line.find(ct)]+"\n")
+			line = line[line.find(ot)+3:]
+		if(ct in line) :
+			line = line[:line.find(ct)]
+		tf.write(line+'\n')
 	tf.close()
-if __name__ == '__main__' :
+def main() :
 	fileLocation = "corpus"
 	if(True) :
 		makeMIDDictionary("final_mids_cleaned.txt")
@@ -80,4 +81,6 @@ if __name__ == '__main__' :
 		print "done extraction"
 		removeTag('p', fileLocation)
 		print "done removing tag"
+if __name__ == '__main__' :
+	main()
 	
